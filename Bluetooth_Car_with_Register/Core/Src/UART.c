@@ -11,47 +11,46 @@ uint16_t speed_level;
 
 void UART_Init()
 {
-	RCC->APB1ENR |= (1 << 18); //USART3 Clock Enable
+	RCC->APB1ENR |= (1 << 18); 		//USART3 Clock Enable
 
-	USART3->CR1 |= (1 << 2); //RE=1 Receiver Enable
-	USART3->CR1 |= (1 << 3); //TE=1 Transmitter Enable
-	USART3->CR1 |= (1 << 5) | (1 << 7); // RXNEIE and TXEIE Enabled
-	USART3->CR1 &= ~(1 << 10); // Parity control disable
-	USART3->CR1 &= ~(1 << 12); // 1 Start bit, 8 Data bits, n Stop bit selected
+	USART3->CR1 |= (1 << 2); 		//RE=1 Receiver Enable
+	USART3->CR1 |= (1 << 3); 		//TE=1 Transmitter Enable
+	USART3->CR1 |= (1 << 5) | (1 << 7); 	// RXNEIE and TXEIE Enabled
+	USART3->CR1 &= ~(1 << 10); 		// Parity control disable
+	USART3->CR1 &= ~(1 << 12); 		// 1 Start bit, 8 Data bits, n Stop bit selected
 
-	USART3->CR2 &= ~(1 << 12); // STOP bit selected 1 Stop bit
+	USART3->CR2 &= ~(1 << 12); 		// STOP bit selected 1 Stop bit
 
-	USART3->BRR = 0x1117; // BaudRate 9600
+	USART3->BRR = 0x1117; 			// BaudRate 9600
 
-	USART3->CR1 |= (1 << 13); //USART Enabled
+	USART3->CR1 |= (1 << 13); 		//USART Enabled
 
-	//ENABLE interrupt for USART3 on NVIC side
-	NVIC_EnableIRQ(USART3_IRQn);
+	NVIC_EnableIRQ(USART3_IRQn);		//ENABLE interrupt for USART3 on NVIC side
 }
 uint8_t UART_GetChar(void)
 {
 	uint8_t data;
 
 	while(!(USART3->SR & (1 << 5))); 	// Wait for RXNE to SET..
-										// This indicates that the data has been Received
-	data = USART3->DR; 					// Read the data
+						// This indicates that the data has been Received
+	data = USART3->DR; 			// Read the data
 	return data;
 }
 void UART_SendChar(char c)
 {
 	while(!(USART3->SR & (1 << 7))); 	// Wait for TXE bit set...
-										// This indicates that the data has been transmitted
-	USART3->DR = c; 					// Load the data
+						// This indicates that the data has been transmitted
+	USART3->DR = c; 			// Load the data
 
 }
 void USART3_IRQHandler(void)
  {
-	uint32_t incoming_data = UART_GetChar();
+	uint32_t incoming_data = UART_GetChar();	//for testing
 
 	switch(incoming_data)
 	{
 		case '0': case '1': case '2': case '3':
-			UART_SendChar(incoming_data);
+			UART_SendChar(incoming_data);	//for testing
 			speed_value = MAX_SPEED * 0;
 			break;
 		case '4': case '5': case '6':
